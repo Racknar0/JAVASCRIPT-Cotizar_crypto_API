@@ -4,15 +4,14 @@ const formulario = document.querySelector('#formulario');
 
 const objBusqueda = {
     moneda: '',
-    criptomoneda: ''
+    criptomoneda: '',
 };
 
 // Crear un Promise
-const obtenerCriptomonedas = criptomonedas => new Promise( resolve => {
-    resolve(criptomonedas);
-});
-
-
+const obtenerCriptomonedas = (criptomonedas) =>
+    new Promise((resolve) => {
+        resolve(criptomonedas);
+    });
 
 document.addEventListener('DOMContentLoaded', () => {
     consultarCriptomonedas();
@@ -21,49 +20,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     criptomonedasSelect.addEventListener('change', leerValor);
     monedaSelect.addEventListener('change', leerValor);
-})
+});
 
 function consultarCriptomonedas() {
-    const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD'
+    const url =
+        'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD';
 
-    fetch ( url )
-        .then (respuesta => respuesta.json() )
-        .then (resultado => obtenerCriptomonedas(resultado.Data))
-        .then ( criptomonedas => selectCriptomonedas(criptomonedas) ) 
-};
+    fetch(url)
+        .then((respuesta) => respuesta.json())
+        .then((resultado) => obtenerCriptomonedas(resultado.Data))
+        .then((criptomonedas) => selectCriptomonedas(criptomonedas));
+}
 
- function selectCriptomonedas(criptomonedas) {
-    criptomonedas.forEach( cripto => {
-        const {FullName, Name } = cripto.CoinInfo;
+function selectCriptomonedas(criptomonedas) {
+    criptomonedas.forEach((cripto) => {
+        const { FullName, Name } = cripto.CoinInfo;
 
         const option = document.createElement('OPTION');
         option.value = Name;
         option.textContent = FullName;
 
         criptomonedasSelect.appendChild(option);
-    })
- }
+    });
+}
 
-
- function leerValor(e) {
+function leerValor(e) {
     objBusqueda[e.target.name] = e.target.value;
- }
+}
 
-
- function submitFormulario ( e ) {
+function submitFormulario(e) {
     e.preventDefault();
-    
-    //! validar form
-    const {moneda, criptomoneda}  = objBusqueda;
 
-    if( moneda === '' || criptomoneda === '') {
+    //! validar form
+    const { moneda, criptomoneda } = objBusqueda;
+
+    if (moneda === '' || criptomoneda === '') {
         mostrarAlerta('Ambos campos son obligatorios');
         return;
     }
- }
+}
 
+function mostrarAlerta(mensaje) {
+    const existeError = document.querySelector('.error');
 
- 
- function mostrarAlerta (mensaje) {
-    console.log(mensaje);
- }
+    if (!existeError) {
+        const divMensaje = document.createElement('DIV');
+        divMensaje.classList.add('error');
+
+        //!mensaje error
+        divMensaje.textContent = mensaje;
+
+        formulario.appendChild(divMensaje);
+
+        setTimeout(() => {
+            divMensaje.remove();
+        }, 3000);
+    }
+}
